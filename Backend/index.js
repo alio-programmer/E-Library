@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/DB.js";
+import Userrouter from "./Routes/User.routes.js";
 dotenv.config();
 const app = express();
 
@@ -18,6 +19,8 @@ const startserver = async () => {
   }
 };
 startserver();
+
+app.use("/api", Userrouter);
 
 app.get("/", (req, res) => {
   res.send("API is running");

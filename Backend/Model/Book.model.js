@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
-
-export const bookschema = mongoose.Schema(
+const bookschema = mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
     },
     Author: {
-      type: Mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -28,3 +27,5 @@ export const bookschema = mongoose.Schema(
 );
 
 const Book = new mongoose.model("Book", bookschema);
+
+export default Book;

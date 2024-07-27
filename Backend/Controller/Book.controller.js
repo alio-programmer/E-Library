@@ -25,6 +25,25 @@ export const createbook = async (req, res) => {
       format: coverImageMimeType,
     });
 
+    const bookfilename = files.file[0].filename;
+    const bookfilepath = path.join(
+      __dirname,
+      "/public/files/uploads",
+      bookfilename
+    );
+
+    const bookfileupdateresult = await cloudinary.uploader.upload(
+      bookfilepath,
+      {
+        resource_type: "raw",
+        filename_override: bookfilename,
+        folder: "book-file",
+        format: "pdf",
+      }
+    );
+
+    console.log("bookfileupdateresult", bookfileupdateresult);
+
     console.log("uploadresult", uploadresult);
     return res.json({ message: "Book created successfully" }).status(201);
   } catch (error) {

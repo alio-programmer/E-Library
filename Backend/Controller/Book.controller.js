@@ -74,3 +74,85 @@ export const createbook = async (req, res) => {
     return res.json({ message: error.message }).status(500);
   }
 };
+
+export const updatebook = async (req, res) => {
+  try {
+    const bookid = req.params.bookid;
+    const files = req.files;
+    const curruser = req.user._id;
+    const book = await Book.findOne({ _id: bookid });
+
+    if (!book) {
+      return res.json({ message: "Book not found" }).status(404);
+    }
+
+    if (book.Author.toString() !== curruser.toString()) {
+      return res
+        .json({ message: "You are not authorized to update this book" })
+        .status(401);
+    }
+
+    const { title, genre } = req.body;
+    const __dirname = path.resolve();
+
+    //coverImage update
+    let completecoverImage = "";
+    if (req?.files?.coverImage) {
+      const filename = files.coverImage[0].filename;
+      const filepath = path.join(__dirname, "/public/files/uploads", filename);
+
+      completecoverImage = filename;
+
+      const uploadresult = await cloudinary.uploader.upload(filepath, {
+        filename_override: filename,
+        folder: "book-cover",
+      });
+
+      completecoverImage = uploadresult.secure_url;
+      await fs.promises.unlink(filepath);
+    }
+
+    //file update
+    let completeBookfile = "";
+    if (req?.files?.file) {
+      const bookfilename = files.file[0].filename;
+      const bookfilepath = path.join(
+        __dirname,
+        "/public/files/uploads",
+        bookfilename
+      );
+      completeBookfile = bookfilename;
+      const bookfileupdateresult = await cloudinary.uploader.upload(
+        bookfilepath,
+        {
+          resource_type: "raw",
+          filename_override: completeBookfile,
+          folder: "book-file",
+        }
+      );
+
+      completeBookfile = bookfileupdateresult.secure_url;
+      await fs.promises.unlink(bookfilepath);
+    }
+
+    const updated = await Book.findByIdAndUpdate(
+      { _id: bookid },
+      {
+        title,
+        genre,
+        coverImage: completecoverImage ? completecoverImage : book.coverImage,
+        file: completeBookfile ? completeBookfile : book.file,
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.json({ message: "Failed to update book" }).status(500);
+    }
+    return res
+      .json({ updated, message: "Book updated successfully" })
+      .status(200);
+  } catch (error) {
+    return res.json({ message: error.message }).status(500);
+  }
+};

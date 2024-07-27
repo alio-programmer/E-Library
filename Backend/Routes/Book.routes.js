@@ -1,7 +1,7 @@
 import express from "express";
 import { protectRoute } from "../Middlewares/ProtectRoute.js";
 import { upload } from "../Middlewares/Multer.js";
-import { createbook } from "../Controller/Book.controller.js";
+import { createbook, updatebook } from "../Controller/Book.controller.js";
 
 const Bookrouter = express.Router();
 
@@ -14,6 +14,17 @@ Bookrouter.post(
   ]),
   createbook
 );
+
+Bookrouter.patch(
+  "/updatebook/:bookid",
+  protectRoute,
+  upload.fields([
+    { name: "coverImage", maxCount: 1 },
+    { name: "file", maxCount: 1 },
+  ]),
+  updatebook
+);
+
 // Bookrouter.get("/getbooks", protectRoute, getbooks);
 
 export default Bookrouter;

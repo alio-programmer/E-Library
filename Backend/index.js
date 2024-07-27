@@ -22,7 +22,7 @@ const startserver = async () => {
 };
 startserver();
 
-app.use("/api", Userrouter);
+app.use("/auth", Userrouter);
 app.use("/api", Bookrouter);
 
 app.get("/", (req, res) => {

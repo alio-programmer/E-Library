@@ -156,3 +156,69 @@ export const updatebook = async (req, res) => {
     return res.json({ message: error.message }).status(500);
   }
 };
+
+export const getbooks = async (req, res) => {
+  try {
+    const books = await Book.find({}).populate("Author", "Username");
+    if (!books) {
+      return res.json({ message: "No books found" }).status(404);
+    }
+    return res.json({ books }).status(200);
+  } catch (error) {
+    return res.json({ message: error.message }).status(500);
+  }
+};
+
+export const listbook = async (req, res) => {
+  try {
+    const bookid = req.params.bookid;
+    const book = await Book.findOne({ _id: bookid }).populate(
+      "Author",
+      "Username"
+    );
+    if (!book) {
+      return res.json({ message: "Book not found" }).status(404);
+    }
+    return res.json({ book }).status(200);
+  } catch (error) {
+    return res.json({ message: error.message }).status(500);
+  }
+};
+
+export const deletebook = async (req, res) => {
+  try {
+    const bookid = req.params.bookid;
+    const curruser = req.user._id;
+    const book = await Book.findOne({ _id: bookid });
+    if (!book) {
+      return res.json({ message: "Book not found" }).status(404);
+    }
+    if (book.Author.toString() !== curruser.toString()) {
+      return res
+        .json({ message: "You are not authorized to delete this book" })
+        .status(401);
+    }
+
+    const coverFilesplit = book.coverImage.split("/");
+    const coverImagePublicID =
+      coverFilesplit.at(-2) + "/" + coverFilesplit.at(-1)?.split(".").at(-2);
+
+    const bookFilesplit = book.file.split("/");
+    const bookFilePublicID = bookFilesplit.at(-2) + "/" + bookFilesplit.at(-1);
+
+    console.log(coverImagePublicID, bookFilePublicID);
+
+    await cloudinary.uploader.destroy(coverImagePublicID);
+    await cloudinary.uploader.destroy(bookFilePublicID, {
+      resource_type: "raw",
+    });
+
+    const deleted = await Book.findByIdAndDelete({ _id: bookid });
+    if (!deleted) {
+      return res.json({ message: "Failed to delete book" }).status(500);
+    }
+    return res.json({ message: "Book deleted successfully" }).status(204);
+  } catch (error) {
+    return res.json({ message: error.message }).status(500);
+  }
+};

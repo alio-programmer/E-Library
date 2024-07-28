@@ -1,11 +1,20 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import connectDB from "./config/DB.js";
 import Userrouter from "./Routes/User.routes.js";
 import Bookrouter from "./Routes/Book.routes.js";
 import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
+
+app.use(
+  cors({
+    origin: "*",
+    methods: "GET, POST, PATCH, DELETE, PUT",
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -22,7 +31,7 @@ const startserver = async () => {
 };
 startserver();
 
-app.use("/auth", Userrouter);
+app.use("/api", Userrouter);
 app.use("/api", Bookrouter);
 
 app.get("/", (req, res) => {

@@ -1,7 +1,13 @@
 import express from "express";
 import { protectRoute } from "../Middlewares/ProtectRoute.js";
 import { upload } from "../Middlewares/Multer.js";
-import { createbook, updatebook } from "../Controller/Book.controller.js";
+import {
+  createbook,
+  updatebook,
+  getbooks,
+  listbook,
+  deletebook,
+} from "../Controller/Book.controller.js";
 
 const Bookrouter = express.Router();
 
@@ -25,6 +31,10 @@ Bookrouter.patch(
   updatebook
 );
 
-// Bookrouter.get("/getbooks", protectRoute, getbooks);
+Bookrouter.get("/", protectRoute, getbooks);
+
+Bookrouter.get("/:bookid", protectRoute, listbook);
+
+Bookrouter.delete("/delete/:bookid", protectRoute, deletebook);
 
 export default Bookrouter;

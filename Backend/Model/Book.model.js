@@ -10,6 +10,14 @@ const bookschema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    Publisher: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
     coverImage: {
       type: String,
       required: true,

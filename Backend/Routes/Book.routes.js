@@ -11,6 +11,10 @@ import {
 
 const Bookrouter = express.Router();
 
+Bookrouter.get("/", getbooks);
+
+Bookrouter.get("/:bookid", listbook);
+
 Bookrouter.post(
   "/createbook",
   protectRoute,
@@ -30,10 +34,6 @@ Bookrouter.patch(
   ]),
   updatebook
 );
-
-Bookrouter.get("/", protectRoute, getbooks);
-
-Bookrouter.get("/:bookid", protectRoute, listbook);
 
 Bookrouter.delete("/delete/:bookid", protectRoute, deletebook);
 

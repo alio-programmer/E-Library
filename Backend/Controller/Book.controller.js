@@ -11,7 +11,7 @@ export const createbook = async (req, res) => {
       return res.status(400).json({ message: "No cover image provided" });
     }
 
-    const { title, genre } = req.body;
+    const { title, genre, Publisher, description } = req.body;
     const Author = req.user._id;
     const __dirname = path.resolve();
 
@@ -55,6 +55,8 @@ export const createbook = async (req, res) => {
     const book = await Book.create({
       title,
       Author,
+      Publisher,
+      description,
       genre,
       coverImage: coverImageURL,
       file: fileURL,
@@ -92,7 +94,7 @@ export const updatebook = async (req, res) => {
         .status(401);
     }
 
-    const { title, genre } = req.body;
+    const { title, genre, Publisher, description } = req.body;
     const __dirname = path.resolve();
 
     //coverImage update
@@ -140,6 +142,8 @@ export const updatebook = async (req, res) => {
       {
         title,
         genre,
+        Publisher,
+        description,
         coverImage: completecoverImage ? completecoverImage : book.coverImage,
         file: completeBookfile ? completeBookfile : book.file,
       },

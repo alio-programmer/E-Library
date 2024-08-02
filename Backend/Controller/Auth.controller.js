@@ -43,7 +43,14 @@ const login = async (req, res) => {
     const ispass = await bcrypt.compare(Password, user.Password);
     if (ispass) {
       generatetoke(user._id, res);
-      return res.json({ message: "User logged in successfully" }).status(200);
+      return res
+        .json({
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          message: "User logged in successfully",
+        })
+        .status(200);
     }
     return res.json({ message: "Invalid credentials" }).status(401);
   } catch (error) {
